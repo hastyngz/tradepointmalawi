@@ -93,7 +93,16 @@ export async function updateUserProfile(uid: string, data: any) {
 const LISTINGS = 'listings';
 export async function createListing(data: any) {
   const col = collection(db, LISTINGS);
-  const docRef = await addDoc(col, { ...data, createdAt: serverTimestamp() });
+  const payload = { ...data, createdAt: serverTimestamp() } as any;
+  // attach ownerId automatically when available
+  try {
+    if (!payload.ownerId && auth?.currentUser?.uid) {
+      payload.ownerId = auth.currentUser.uid;
+    }
+  } catch (e) {
+    // ignore — auth may not be available in some environments
+  }
+  const docRef = await addDoc(col, payload);
   return docRef.id;
 }
 
@@ -147,6 +156,26 @@ const CHATS = 'chats';
 export async function createChat(users: string[]) {
   const col = collection(db, CHATS);
   const docRef = await addDoc(col, { participants: users, createdAt: serverTimestamp() });
+  return docRef.id;
+}
+
+// Find an existing chat with the exact same participants (order-independent), or create one.
+export async function getOrCreateChat(users: string[]) {
+  if (!users || users.length === 0) throw new Error('users required');
+  // Try to find an existing chat by querying for one participant and checking client-side
+  const first = users[0];
+  const q = query(collection(db, CHATS), where('participants', 'array-contains', first));
+  const snaps = await getDocs(q);
+  for (const d of snaps.docs) {
+    const data: any = d.data();
+    const parts: string[] = data.participants || [];
+    if (!Array.isArray(parts)) continue;
+    // Check same length and that every user is present (order-independent)
+    if (parts.length === users.length && users.every((u) => parts.includes(u))) {
+      return d.id;
+    }
+  }
+  const docRef = await addDoc(collection(db, CHATS), { participants: users, createdAt: serverTimestamp() });
   return docRef.id;
 }
 

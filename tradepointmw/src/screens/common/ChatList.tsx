@@ -21,14 +21,26 @@ export default function ChatList({ navigation }: any) {
 
   return (
     <View style={styles.container}>
-      <FlatList data={chats} keyExtractor={(i) => i.id} renderItem={({ item }) => (
-        <View style={styles.row}>
-          <Text>{item.id}</Text>
-          <Button title="Open" onPress={() => navigation.navigate('Chat', { chatId: item.id })} />
-        </View>
-      )} />
+      <FlatList
+        data={chats}
+        keyExtractor={(i) => i.id}
+        renderItem={({ item }) => (
+          <View style={styles.row}>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.chatTitle}>Chat {item.id.slice(0, 6)}</Text>
+              <Text style={styles.chatMeta}>{item.participants?.join(', ')}</Text>
+            </View>
+            <Button title="Open" onPress={() => navigation.navigate('Chat', { chatId: item.id })} />
+          </View>
+        )}
+      />
     </View>
   );
 }
 
-const styles = StyleSheet.create({ container: { flex: 1, padding: 16 }, row: { padding: 12, borderBottomWidth: 1, borderColor: '#eee', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' } });
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 16 },
+  row: { padding: 12, borderBottomWidth: 1, borderColor: '#eee', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  chatTitle: { fontWeight: '700' },
+  chatMeta: { color: '#666', fontSize: 12 },
+});

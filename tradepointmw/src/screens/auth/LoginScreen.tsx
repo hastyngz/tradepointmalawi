@@ -33,8 +33,8 @@ export default function LoginScreen({ navigation }: any) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, justifyContent: 'center' },
-  title: { fontSize: 22, marginBottom: 16 },
-  input: { borderWidth: 1, borderColor: '#ccc', padding: 8, marginBottom: 12, borderRadius: 6 },
-  row: { marginTop: 12, flexDirection: 'row', gap: 8, alignItems: 'center' as const },
+  container: { flex: 1, padding: 16, justifyContent: 'center', backgroundColor: '#fafafa' },
+  title: { fontSize: 22, marginBottom: 16, textAlign: 'center' as const },
+  input: { borderWidth: 1, borderColor: '#ccc', padding: 12, marginBottom: 12, borderRadius: 8, backgroundColor: '#fff' },
+  row: { marginTop: 12, flexDirection: 'row', gap: 8, alignItems: 'center' as const, justifyContent: 'center' },
 });
